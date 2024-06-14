@@ -1,4 +1,4 @@
-import NavBar from "./components/NavBar"
+import NavBar from "@/app/components/NavBar"
 import SearchBar from "@/app/components/SearchBar";
 import Map from "@/app/components/Map";
 import Card from "@/app/components/Card";
@@ -14,33 +14,37 @@ const getProperties = async()=>{
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            query:`query Properties {
-  properties {
-    beds
-    description
-    name
-    rentalPrice
-    slug
-    updatedAt
-    images {
-      fileName
-      url
-    }
-    id
-    location {
-      latitude
-      longitude
-    }
-  }
-}
-`
+            query:
+                `query Properties {
+                  properties {
+                    beds
+                    description
+                    name
+                    rentalPrice
+                    slug
+                    updatedAt
+                    images {
+                      fileName
+                      url
+                    }
+                    id
+                    location {
+                      latitude
+                      longitude
+                    }
+                  }
+                }
+                `
         })
     })
     const json = await response.json()
     return json.data.properties
 }
 
-const Home = () => {
+const Home = async () => {
+    const properties = await getProperties()
+    console.log(properties)
+
   return (
       <>
       <NavBar/>
@@ -52,7 +56,15 @@ const Home = () => {
           <article className="listings">
               <h2>Rental Listings</h2>
               <div className="card-container">
-                  <Card/>
+                  {properties.map(property => <Card
+                  key={property.id}
+                  propertyName={property.name}
+                  slug={property.slug}
+                  rentalPrice={property.rentalPrice}
+                  beds={property.beds}
+                  image={property.images[0]}
+
+                  />)}
               </div>
           </article>
 
